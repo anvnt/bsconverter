@@ -19,21 +19,26 @@ def pdf_to_img(dir, filepath):
     # fname = os.path.split(filepath)[1]
 
     # Create a temp folder to store extracted images
-    try: 
-        os.mkdir(dir[0] + '/temp')
-    except OSError as e:
-        print("Error: %s" % (e.strerror))
+    temp = dir[0] + '/temp'
+    if not os.path.exists(temp): 
+        os.mkdir(temp)  
+    else:
+        remove_temp_folder(dir)
+        os.mkdir(temp)
+    # except OSError as e:
+    #     print("Error: %s" % (e.strerror))
 
     # Convert PDF pages into images            
     images = convert_from_path(filepath)
     for i in range(len(images)):
-        images[i].save(dir[0] + '/' + 'temp/' + dir[1] + '_' + str(i).zfill(4) +'.jpg', 'JPEG')
+        images[i].save(dir[0] + '/' + 'temp/' + dir[1].split('.')[0] + '_' + str(i+1).zfill(4) +'.jpg', 'JPEG')
     
     return glob.glob(dir[0] + '/' + 'temp/*.jpg')
 
 def remove_temp_folder(dir):
+    temp = dir[0] + '/temp'
     try:
-        shutil.rmtree(dir[0] + '/temp')
+        shutil.rmtree(temp)
     except OSError as e:
         print("Error : %s" % (e.strerror))
 
@@ -146,7 +151,7 @@ def get_cells(img, contours, boundingBoxes):
         finalboxes.append(lis)
     return row, countcol, finalboxes
 
-def extract_text(dir, bitnot, row, countcol, finalboxes):
+def extract_text(dir, imgpath, bitnot, row, countcol, finalboxes):
     #from every single image-based cell/box the strings are extracted via pytesseract and stored in a list
     outer=[]
     for i in range(len(finalboxes)):
@@ -174,10 +179,17 @@ def extract_text(dir, bitnot, row, countcol, finalboxes):
     #Creating a dataframe of the generated OCR list
     arr = np.array(outer)
     dataframe = pd.DataFrame(arr.reshape(len(row),countcol))
-    print(dataframe)
+    # print(dataframe)
     data = dataframe.style.set_properties(align="left")
+    filename = dir[0] + '/' + dir[1].split('.')[0] + '_output.xlsx'
+    sheetname = os.path.split(imgpath)[1].split('.')[0].split('_')[1]
     #Converting it in a excel-file
-    data.to_excel(dir[0] + '/output.xlsx', encoding = 'utf-8')
+    if os.path.exists(filename):
+        with pd.ExcelWriter(filename, mode='a') as writer:  
+            data.to_excel(writer, encoding = 'utf-8', sheet_name = sheetname)
+    else:
+        with pd.ExcelWriter(filename, mode='w') as writer:  
+            data.to_excel(writer, encoding = 'utf-8', sheet_name = sheetname) # , index = False
 
 ############### MAIN ###############
 def main_convert(lspaths):    
@@ -188,13 +200,12 @@ def main_convert(lspaths):
         print(dir)
         images = pdf_to_img(dir, pdffile)
         
-        for img in images:
+        for imgpath in sorted(images):
             #read your file
-            img = cv2.imrep;;;;;;ad(img,0)
-            img.shape
+            img = cv2.imread(imgpath,0)
             bitnot, contours, boundingBoxes = detect_lines(img)
             row, countcol, finalboxes       = get_cells(img, contours, boundingBoxes)
-            outer                           = extract_text(dir, bitnot, row, countcol, finalboxes)
+            outer                           = extract_text(dir, imgpath, bitnot, row, countcol, finalboxes)
 
 
 

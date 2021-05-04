@@ -34,11 +34,11 @@ def open_file():
         page_content = page.extractText()
 
         #text box
-        text_box = tk.Text(root, height=10, width=50, padx=15, pady=15)
+        text_box = tk.Text(root, height=10, width=85, padx=15, pady=0)
         text_box.insert(1.0, page_content)
         text_box.tag_configure("center", justify="center")
         text_box.tag_add("center", 1.0, "end")
-        text_box.grid(column=1, row=3)
+        text_box.grid(columnspan=2, row=3)
 
         browse_text.set("Browse")
 
@@ -48,7 +48,7 @@ browse_btn = tk.Button(root, textvariable=browse_text, command=lambda:open_file(
 browse_text.set("Browse")
 browse_btn.grid(column=0, row=2)
 
-#browse button
+#convert button
 convert_text = tk.StringVar()
 convert_btn = tk.Button(root, textvariable=browse_text, command=lambda:open_file(), font="Raleway", bg="#46bcde", fg="white", height=2, width=25)
 convert_text.set("Convert")

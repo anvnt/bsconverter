@@ -156,6 +156,7 @@ def extract_text(dir, imgpath, bitnot, row, countcol, finalboxes):
     outer=[]
     for i in range(len(finalboxes)):
         for j in range(len(finalboxes[i])):
+            print(f'finalbox[{i}][{j}] == {finalboxes[i][j]}')
             inner=''
             if(len(finalboxes[i][j])==0):
                 outer.append(' ')
@@ -169,8 +170,18 @@ def extract_text(dir, imgpath, bitnot, row, countcol, finalboxes):
                     dilation = cv2.dilate(resizing, kernel,iterations=1)
                     erosion = cv2.erode(dilation, kernel,iterations=1)
 
-                    
-                    out = pytesseract.image_to_string(erosion)
+                    if i==0: #first row: table title 
+                        out = pytesseract.image_to_string(erosion, config='-l vie')
+                    else:
+                        if j==0: #first col: date time
+                            out = pytesseract.image_to_string(erosion, config='-l eng --psm 12')
+                        elif j==2 or j==3 or j==4:
+                            out = pytesseract.image_to_string(erosion, config='-l eng -c tessedit_char_whitelist=0123456789,')
+                        elif j==5: 
+                            out = pytesseract.image_to_string(erosion, config='-l eng -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+                        else:
+                            out = pytesseract.image_to_string(erosion)
+                    print(out)
                     if(len(out)==0):
                         out = pytesseract.image_to_string(erosion, config='--psm 3')
                     inner = inner +" "+ out.replace('\x0c', '')
@@ -193,8 +204,6 @@ def extract_text(dir, imgpath, bitnot, row, countcol, finalboxes):
 
 ############### MAIN ###############
 def main_convert(lspaths):    
-
-
     for pdffile in lspaths:
         dir = os.path.split(pdffile)
         print(dir)

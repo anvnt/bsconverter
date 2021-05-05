@@ -12,6 +12,7 @@ from pdf2image import convert_from_path
 import glob
 import os
 import shutil
+import app
 
 def pdf_to_img(dir, filepath):
     # Get file name
@@ -220,12 +221,13 @@ def main_convert(lspaths, save_loc):
         global done
         done = os.path.split(filename)[1] + ' was saved!\n'
         print(done)
-        import app
-        app.convert_tb.config(state='normal')
-        app.convert_tb.insert('end-1c', core.done)
-        app.convert_tb.tag_configure("center", justify="center")
-        app.convert_tb.tag_add("center", 1.0, "end")
-        app.convert_tb.config(state='disabled')
+
+        # app.App.convert_tb.config(state='normal')
+        # app.App.convert_tb.insert('end-1c', core.done)
+        # app.App.convert_tb.tag_configure("center", justify="center")
+        # app.App.convert_tb.tag_add("center", 1.0, "end")
+        # app.App.convert_tb.config(state='disabled')
+
 
 if __name__== "__main__":
     path = glob.glob('/home/anvnt/Documents/bsconverter/PDF-SaoKeNH/*.pdf')

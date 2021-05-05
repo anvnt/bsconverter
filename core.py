@@ -180,7 +180,6 @@ def extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes):
                             out = pytesseract.image_to_string(erosion, config='-l eng -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
                         else:
                             out = pytesseract.image_to_string(erosion)
-                    print(out)
                     if(len(out)==0):
                         out = pytesseract.image_to_string(erosion, config='--psm 3')
                     inner = inner +" "+ out.replace('\x0c', '')
@@ -201,12 +200,13 @@ def extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes):
     else:
         with pd.ExcelWriter(filename, mode='w') as writer:  
             data.to_excel(writer, encoding = 'utf-8', sheet_name = sheetname) # , index = False
+    return os.path.split(filename)[1], sheetname
 
 ############### MAIN ###############
 def main_convert(lspaths, save_loc):    
     for pdffile in lspaths:
         dir = os.path.split(pdffile)
-        print(dir)
+        print('working on ', dir)
         images = pdf_to_img(dir, pdffile)
         
         for imgpath in sorted(images):
@@ -214,9 +214,18 @@ def main_convert(lspaths, save_loc):
             img = cv2.imread(imgpath,0)
             bitnot, contours, boundingBoxes = detect_lines(img)
             row, countcol, finalboxes       = get_cells(img, contours, boundingBoxes)
-            outer                           = extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes)
+            filename, sheetname             = extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes)
 
         remove_temp_folder(dir)
+        global done
+        done = os.path.split(filename)[1] + ' was saved!\n'
+        print(done)
+        import app
+        app.convert_tb.config(state='normal')
+        app.convert_tb.insert('end-1c', core.done)
+        app.convert_tb.tag_configure("center", justify="center")
+        app.convert_tb.tag_add("center", 1.0, "end")
+        app.convert_tb.config(state='disabled')
 
 if __name__== "__main__":
     path = glob.glob('/home/anvnt/Documents/bsconverter/PDF-SaoKeNH/*.pdf')

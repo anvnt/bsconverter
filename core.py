@@ -9,7 +9,6 @@ except ImportError:
     import Image
 import pytesseract
 from pdf2image import convert_from_path
-
 import glob
 import os
 import shutil
@@ -221,5 +220,5 @@ def main_convert(lspaths):
         remove_temp_folder(dir)
 
 if __name__== "__main__":
-    path = glob.glob('/home/anvnt/Documents/PDF-SaoKeNH/*.pdf')
+    path = glob.glob('/home/anvnt/Documents/bsconverter/PDF-SaoKeNH/*.pdf')
     main_convert(path)

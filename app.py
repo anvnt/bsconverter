@@ -79,7 +79,7 @@ def change_save_loc():
     cd_text.set("Change save location")
 
 def convert_to_excel():
-    core.main_convert(list(file_names))
+    core.main_convert(list(file_names), save_loc)
 
 #browse button
 browse_text = tk.StringVar()

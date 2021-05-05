@@ -150,12 +150,12 @@ def get_cells(img, contours, boundingBoxes):
         finalboxes.append(lis)
     return row, countcol, finalboxes
 
-def extract_text(dir, imgpath, bitnot, row, countcol, finalboxes):
+def extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes):
     #from every single image-based cell/box the strings are extracted via pytesseract and stored in a list
     outer=[]
     for i in range(len(finalboxes)):
         for j in range(len(finalboxes[i])):
-            print(f'finalbox[{i}][{j}] == {finalboxes[i][j]}')
+            # print(f'finalbox[{i}][{j}] == {finalboxes[i][j]}')
             inner=''
             if(len(finalboxes[i][j])==0):
                 outer.append(' ')
@@ -191,7 +191,8 @@ def extract_text(dir, imgpath, bitnot, row, countcol, finalboxes):
     dataframe = pd.DataFrame(arr.reshape(len(row),countcol))
     # print(dataframe)
     data = dataframe.style.set_properties(align="left")
-    filename = dir[0] + '/' + dir[1].split('.')[0] + '_output.xlsx'
+    # filename = dir[0] + '/' + dir[1].split('.')[0] + '_output.xlsx'
+    filename = save_loc + '/' + dir[1].split('.')[0] + '_output.xlsx'
     sheetname = os.path.split(imgpath)[1].split('.')[0].split('_')[1]
     #Converting it in a excel-file
     if os.path.exists(filename):
@@ -202,7 +203,7 @@ def extract_text(dir, imgpath, bitnot, row, countcol, finalboxes):
             data.to_excel(writer, encoding = 'utf-8', sheet_name = sheetname) # , index = False
 
 ############### MAIN ###############
-def main_convert(lspaths):    
+def main_convert(lspaths, save_loc):    
     for pdffile in lspaths:
         dir = os.path.split(pdffile)
         print(dir)
@@ -213,9 +214,7 @@ def main_convert(lspaths):
             img = cv2.imread(imgpath,0)
             bitnot, contours, boundingBoxes = detect_lines(img)
             row, countcol, finalboxes       = get_cells(img, contours, boundingBoxes)
-            outer                           = extract_text(dir, imgpath, bitnot, row, countcol, finalboxes)
-
-
+            outer                           = extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes)
 
         remove_temp_folder(dir)
 

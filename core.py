@@ -162,7 +162,8 @@ def extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes):
                 outer.append(' ')
             else:
                 for k in range(len(finalboxes[i][j])):
-                    y,x,w,h = finalboxes[i][j][k][0],finalboxes[i][j][k][1], finalboxes[i][j][k][2],finalboxes[i][j][k][3]
+                    y,x,w,h = finalboxes[i][j][k][0],finalboxes[i][j][k][1], 
+                    finalboxes[i][j][k][2],finalboxes[i][j][k][3]
                     finalimg = bitnot[x:x+h, y:y+w]
                     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 1))
                     border = cv2.copyMakeBorder(finalimg,2,2,2,2,   cv2.BORDER_CONSTANT,value=[255,255])
@@ -174,11 +175,14 @@ def extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes):
                         out = pytesseract.image_to_string(erosion, config='-l vie')
                     else:
                         if j==0: #first col: date time
-                            out = pytesseract.image_to_string(erosion, config='-l eng --psm 12')
+                            out = pytesseract.image_to_string(erosion, 
+                            config='-l eng --psm 12')
                         elif j==2 or j==3 or j==4:
-                            out = pytesseract.image_to_string(erosion, config='-l eng -c tessedit_char_whitelist=0123456789,')
+                            out = pytesseract.image_to_string(erosion, 
+                            config='-l eng -c tessedit_char_whitelist=0123456789,')
                         elif j==5: 
-                            out = pytesseract.image_to_string(erosion, config='-l eng -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+                            out = pytesseract.image_to_string(erosion, 
+                            config='-l eng -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
                         else:
                             out = pytesseract.image_to_string(erosion)
                     if(len(out)==0):
@@ -221,12 +225,14 @@ def main_convert(lspaths, save_loc):
         global done
         done = os.path.split(filename)[1] + ' was saved!\n'
         print(done)
-
-        # app.App.convert_tb.config(state='normal')
-        # app.App.convert_tb.insert('end-1c', core.done)
-        # app.App.convert_tb.tag_configure("center", justify="center")
-        # app.App.convert_tb.tag_add("center", 1.0, "end")
-        # app.App.convert_tb.config(state='disabled')
+        
+        #########NOT WORKING 
+        app = app.App(self)
+        app.convert_tb.config(state='normal')
+        app.convert_tb.insert('end-1c', core.done)
+        app.convert_tb.tag_configure("center", justify="center")
+        app.convert_tb.tag_add("center", 1.0, "end")
+        app.convert_tb.config(state='disabled')
 
 
 if __name__== "__main__":

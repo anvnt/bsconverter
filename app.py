@@ -11,6 +11,7 @@ from tkinter.ttk import Progressbar
 import time
 import core
 import os
+import threading
 
 class App:
     def __init__(self):

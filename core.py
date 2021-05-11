@@ -13,6 +13,8 @@ import glob
 import os
 import shutil
 import app
+from PyPDF2 import PdfFileReader
+
 
 def pdf_to_img(dir, filepath):
     # Get file name
@@ -208,7 +210,15 @@ def extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes):
     return os.path.split(filename)[1], sheetname
 
 ############### MAIN ###############
-def main_convert(lspaths, save_loc):    
+def main_convert(lspaths, save_loc):  
+    # app = app.App(self) 
+    # pagescount = 0 
+    # for pdffile in lspaths:
+    #     with open(pdffile, "rb") as pdf_file:
+    #         pdf_reader = PdfFileReader(pdf_file)
+    #         pagescount += pdf_reader.numPages
+    # print(pagescount)
+
     for pdffile in lspaths:
         dir = os.path.split(pdffile)
         print('working on ', dir)
@@ -220,6 +230,9 @@ def main_convert(lspaths, save_loc):
             bitnot, contours, boundingBoxes = detect_lines(img)
             row, countcol, finalboxes       = get_cells(img, contours, boundingBoxes)
             filename, sheetname             = extract_text(dir, save_loc, imgpath, bitnot, row, countcol, finalboxes)
+            # app.step(100/pagescount)
+            # print('step = ', 100/pagescount)
+
 
         remove_temp_folder(dir)
         global done
@@ -227,12 +240,12 @@ def main_convert(lspaths, save_loc):
         print(done)
         
         #########NOT WORKING 
-        app = app.App(self)
-        app.convert_tb.config(state='normal')
-        app.convert_tb.insert('end-1c', core.done)
-        app.convert_tb.tag_configure("center", justify="center")
-        app.convert_tb.tag_add("center", 1.0, "end")
-        app.convert_tb.config(state='disabled')
+        # app = app.App(self)
+        # app.convert_tb.config(state='normal')
+        # app.convert_tb.insert('end-1c', core.done)
+        # app.convert_tb.tag_configure("center", justify="center")
+        # app.convert_tb.tag_add("center", 1.0, "end")
+        # app.convert_tb.config(state='disabled')
 
 
 if __name__== "__main__":
